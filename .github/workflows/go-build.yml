@@ -45,12 +45,19 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') # Only runs when a tag is pushed
+    if: ${{ startsWith(github.ref, 'refs/tags/v') || github.event.inputs.tag_name != '' }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Required by GoReleaser to generate change logs
+
+    - name: Create local tag if manual run
+      if: ${{ github.event.inputs.tag_name != '' }}
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@://github.com"
+        git tag -a "${{ github.event.inputs.tag_name }}" -m "Manual release via GitHub UI"
 
     - name: Set up Go
       uses: actions/setup-go@v5
