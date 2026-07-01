@@ -4,7 +4,16 @@
 name: Go Build and Release
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Manual Release Tag (e.g., v1.0.0) - Leave blank for normal build'
+        required: false
+        default: ''
+
+  push:
+    tags:
+      - 'v*'
 
 jobs:
 
